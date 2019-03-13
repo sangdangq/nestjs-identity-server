@@ -5,9 +5,9 @@ const HerokuDb = {
   dialect: 'mysql',
   host: 'us-cdbr-iron-east-03.cleardb.net',
   port: 3306,
-  username: 'bd5b617fd8032b',
-  password: '9542f819',
-  database: 'heroku_d5fe62c634ae31e',
+  username: 'b19f6c1702f6ee',
+  password: 'feb8b542',
+  database: 'heroku_f12da9dd03095a3',
 };
 
 const LocalDb = {
