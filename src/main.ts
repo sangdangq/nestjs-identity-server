@@ -6,6 +6,7 @@ import { ValidationPipe } from './shared/pipe/generic-pipe';
 declare const module: any;
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.enableCors();
   app.useGlobalPipes(new ValidationPipe());
 
   const opttions = new DocumentBuilder()
