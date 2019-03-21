@@ -1,4 +1,4 @@
-import { Table, Column, IsUUID, Unique, AllowNull, BeforeCreate, Model, AutoIncrement, PrimaryKey } from 'sequelize-typescript';
+import { Table, Column, IsUUID, Unique, AllowNull, BeforeCreate, Model, AutoIncrement, PrimaryKey, BeforeUpdate } from 'sequelize-typescript';
 import * as crypto from 'crypto-js';
 
 @Table
@@ -23,7 +23,7 @@ export class User extends Model<User>{
   PhoneNo: string;
 
   @Column
-  Gender: string;
+  Gender: number;
 
   @Column
   DateOfBirth: Date;

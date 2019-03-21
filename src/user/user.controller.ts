@@ -1,20 +1,16 @@
 import { HttpStatus, UseGuards, Put, Delete } from '@nestjs/common';
 import { Get, Controller, Post, Body, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Login } from './../shared/model/user';
+import { Login, UserRegister, PasswordChange } from './../shared/model/user';
 import { UserService } from './user.service';
+import { ResetPassword } from './user.entity';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly _userService: UserService) {}
 
-  @Get('')
-  showLoginPage() {
-    return 'Login page';
-  }
-
   @Post('register')
-  async register(@Body() body, @Res() res) {
+  async register(@Body() body: UserRegister, @Res() res) {
     this._userService.signUp(body).then(data => {
       if (data.isSuccessfully) {
         res.status(HttpStatus.OK).end(data.message);
@@ -23,18 +19,18 @@ export class UserController {
     });
   }
 
-  @UseGuards(AuthGuard('jwt'))
-  @Put('change-password')
-  async changePassword(@Body() body, @Res() res) {
-    await this._userService.changePassword(body).then(isSuccess => {
-      if (isSuccess) {
-        res.status(HttpStatus.OK).end('Successfully');
-      }
+  @UseGuards(AuthGuard())
+  @Put('changePassword')
+  async changePassword(@Body() body: PasswordChange, @Res() res) {
+    const result = await this._userService.changePassword(body);
+    if (result) {
+      res.status(HttpStatus.OK).end('Successfully');
+    } else {
       res.status(HttpStatus.BAD_REQUEST).end('Failed');
-    });
+    }
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard())
   @Delete('delete')
   async delete(@Body() body: Login,  @Res() res) {
     const isDelete = await this._userService.delete(body);
@@ -50,14 +46,15 @@ export class UserController {
     await this._userService.login(body).then(data => {
       if (data) {
         res.status(HttpStatus.OK).end(data);
+      } else {
+        res.status(HttpStatus.BAD_REQUEST).end('Login failed');
       }
-      res.status(HttpStatus.BAD_REQUEST).end('Login failed');
     });
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard())
   @Post('getInfo')
-  async info(@Body() body: any, @Res() res) {
+  async info(@Body() body: Login, @Res() res) {
     const info = await this._userService.getUserInfo(body.email);
     if (info) {
       res.status(HttpStatus.OK).send(info);
@@ -67,7 +64,7 @@ export class UserController {
   }
 
   @Post('resetPassword')
-  async resetPassword(@Body() body: any, @Res() res) {
+  async resetPassword(@Body() body: ResetPassword, @Res() res) {
     await this._userService.resetPassword(body.email).then(isSuccess => {
       if (isSuccess) {
         res.status(HttpStatus.OK).end('Reset password is sent to your email');

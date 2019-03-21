@@ -1,6 +1,6 @@
 import { Injectable, Inject} from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto-js';
-import * as KJUR from 'jsrsasign';
 import { UUID } from 'angular2-uuid';
 import { User, ResetPassword } from './user.entity';
 import { UserRegister, PasswordChange, Login } from './../shared/model/user';
@@ -11,6 +11,7 @@ export class UserService {
     private secretKey = 'K4ad24@$!Dpnh80-14nadhKUoqe&&BJMSSSA';
     constructor(
         @Inject('UserRepository') private readonly userRepo: typeof User,
+        private readonly _jwtService: JwtService,
     ) {
     }
     public async signUp(data: UserRegister): Promise<any> {
@@ -53,9 +54,10 @@ export class UserService {
         if (data.newPassword !== data.retypePassword) {
             return false;
         }
-        if (user.Password === data.oldPassword) {
+        const oldPassword = crypto.SHA256(data.oldPassword).toString();
+        if (user.Password === oldPassword) {
             await this.userRepo.update({
-                Password: data.newPassword,
+                Password: crypto.SHA256(data.newPassword).toString(),
             },
             {
                 where: {
@@ -82,17 +84,14 @@ export class UserService {
         const user = await this.userRepo.findOne({ where : {Email: login.email} });
         const hashPwd = crypto.SHA256(login.password).toString();
         if (user && user.Password === hashPwd) {
-            const oHeader = {alg: 'HS256', typ: 'JWT'};
             const payload: JwtPayload = {
                 email: user.Email,
                 firstName: user.FirstName,
                 lastName: user.LastName,
                 role: 'member',
             };
-            const sHeader = JSON.stringify(oHeader);
-            const sPayload = JSON.stringify(payload);
-            const sJWT = KJUR.jws.JWS.sign('HS256', sHeader, sPayload, this.secretKey);
-            return sJWT;
+            const token = this._jwtService.sign(payload);
+            return token;
         }
     }
 

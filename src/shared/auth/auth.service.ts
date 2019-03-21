@@ -10,25 +10,19 @@ export class AuthService {
   private readonly jwtKey: string;
   constructor(
     @Inject(forwardRef(() => UserService))
-        readonly _userService: UserService,
+        readonly userService: UserService,
   ) {
-    this.jwtOptions = { expiresIn: '12h' };
-    this.jwtKey = 'K4ad24@$!Dpnh80-14nadhKUoqe&&BJMSSSA';
   }
 
   public async validateUser(payload: JwtPayload): Promise<boolean> {
     if (!payload) {
         return false;
     }
-    const user = await this._userService.getUserbyEmail(payload.email);
+    const user = await this.userService.getUserbyEmail(payload.email);
     if (user) {
         return true;
     } else {
         return false;
     }
-  }
-
-  public async createToken(payload: JwtPayload) {
-    return sign(payload, this.jwtKey, this.jwtOptions);
   }
 }

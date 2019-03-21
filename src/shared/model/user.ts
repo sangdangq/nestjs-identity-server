@@ -1,23 +1,39 @@
-import { ApiModelProperty } from '@nestjs/swagger';
-import { IsString, IsInt, Length, IsNotEmpty, IsEmail } from 'class-validator';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import { IsString, IsInt, Length, IsNotEmpty, IsEmail, IsNumber, IsDate } from 'class-validator';
 
 export class UserRegister {
-    @ApiModelProperty()
-    customerId: string;
+    @ApiModelPropertyOptional()
+    customerId?: string;
+
+    @IsString()
     @ApiModelProperty()
     lastName: string;
+
+    @IsString()
     @ApiModelProperty()
     firstName: string;
+
+    @IsString()
     @ApiModelProperty()
     email: string;
+
+    @IsString()
     @ApiModelProperty()
     password: string;
+
+    @IsString()
     @ApiModelProperty()
     rePassword: string;
+
+    @IsString()
     @ApiModelProperty()
     phoneNo: string;
+
+    @IsNumber()
     @ApiModelProperty()
-    gender: string;
+    gender: number;
+
+    @IsDate()
     @ApiModelProperty()
     dateOfBirth: Date;
 }
@@ -34,16 +50,29 @@ export class PasswordChange {
 }
 
 export class Login {
+    @IsEmail()
     @ApiModelProperty()
-    // @IsEmail()
     email: string;
+
+    @IsString()
+    @IsNotEmpty()
     @ApiModelProperty()
-    // @IsNotEmpty()
     password: string;
 }
 
 export class UserClaim {
-    @ApiModelProperty() email: string;
-    @ApiModelProperty() firstName: string;
-    @ApiModelProperty() phoneNo: string;
+    @ApiModelProperty()
+    email: string;
+
+    @ApiModelProperty()
+    firstName: string;
+
+    @ApiModelProperty()
+    phoneNo: string;
+}
+
+export class ResetPassword {
+    @IsEmail()
+    @ApiModelProperty()
+    email: string;
 }

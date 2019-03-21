@@ -3,10 +3,17 @@ import { UserService } from './user.service';
 import { UserController } from './user.controller';
 import { DatabaseModule } from '../database/database.module';
 import { userProviders } from './user.provider';
+import { JwtModule } from '@nestjs/jwt';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
     imports: [
         DatabaseModule,
+        PassportModule.register({ defaultStrategy: 'jwt' }),
+        JwtModule.register({
+            secretOrPrivateKey: 'K4ad24@$!Dpnh80-14nadhKUoqe&&BJMSSSA',
+            signOptions: { expiresIn: '30m' },
+        }),
     ],
     providers: [
         UserService,
