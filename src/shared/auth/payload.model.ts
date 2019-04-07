@@ -8,4 +8,5 @@ export interface JwtPayload {
 export interface Token {
     token: string;
     expireIn: number;
+    refreshToken: string;
 }

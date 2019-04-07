@@ -1,20 +1,16 @@
-import { UserService } from './../../user/user.service';
 import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { JwtPayload } from './payload.model';
-import { JwtService } from '@nestjs/jwt';
-import { sign, SignOptions } from 'jsonwebtoken';
+import { UserService } from './../../user/user.service';
 
 @Injectable()
 export class AuthService {
-  private readonly jwtOptions: SignOptions;
-  private readonly jwtKey: string;
   constructor(
     @Inject(forwardRef(() => UserService))
         readonly userService: UserService,
-  ) {
-  }
+  ) {}
 
   public async validateUser(payload: JwtPayload): Promise<boolean> {
+    console.log(payload);
     if (!payload) {
         return false;
     }

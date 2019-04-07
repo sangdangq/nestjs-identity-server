@@ -1,18 +1,14 @@
-import { UserModule } from '../user/user.module';
 import { Module } from '@nestjs/common';
-import { PassportModule } from '@nestjs/passport';
-import { JwtModule } from '@nestjs/jwt';
+import { UserModule } from '../user/user.module';
 import { AuthService } from './auth/auth.service';
 import { JwtStrategy } from './auth/jwt.strategy';
 
 @Module({
+    imports: [UserModule],
     providers: [
         AuthService,
         JwtStrategy,
     ],
     exports: [AuthService],
-    imports: [
-        UserModule,
-    ],
 })
 export class SharedModule {}

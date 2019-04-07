@@ -4,6 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Login, UserRegister, PasswordChange } from './../shared/model/user';
 import { UserService } from './user.service';
 import { ResetPassword } from './user.entity';
+import { RefreshToken } from 'token/refresh-token.model';
 
 @Controller('user')
 export class UserController {
@@ -45,7 +46,7 @@ export class UserController {
   async login(@Body() body: Login, @Res() res) {
     await this._userService.login(body).then(data => {
       if (data) {
-        res.status(HttpStatus.OK).end(data);
+        res.status(HttpStatus.OK).send(data);
       } else {
         res.status(HttpStatus.BAD_REQUEST).end('Login failed');
       }
@@ -66,6 +67,16 @@ export class UserController {
   @Post('resetPassword')
   async resetPassword(@Body() body: ResetPassword, @Res() res) {
     await this._userService.resetPassword(body.email).then(isSuccess => {
+      if (isSuccess) {
+        res.status(HttpStatus.OK).end('Reset password is sent to your email');
+      }
+      res.status(HttpStatus.BAD_REQUEST).end('Failed');
+    });
+  }
+
+  @Post('refreshToken')
+  async refreshToken(@Body() info: RefreshToken, @Res() res) {
+    await this._userService.refreshToken(info).then(isSuccess => {
       if (isSuccess) {
         res.status(HttpStatus.OK).end('Reset password is sent to your email');
       }
