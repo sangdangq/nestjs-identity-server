@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Login, UserRegister, PasswordChange } from './../shared/model/user';
 import { UserService } from './user.service';
 import { ResetPassword } from './user.entity';
-import { RefreshToken } from 'token/refresh-token.model';
+import { RefreshToken } from '../token/refresh-token.model';
 
 @Controller('user')
 export class UserController {
