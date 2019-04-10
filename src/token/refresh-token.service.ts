@@ -16,7 +16,7 @@ export class RefreshTokenService {
 
     async validateRefreshToken(refreshTokenInfo: RefreshTokenVm) {
         const info = await this.refreshTokenModel.findOne({email: refreshTokenInfo.email});
-        if (info.refreshToken === refreshTokenInfo.refreshToken) {
+        if (info && info.refreshToken === refreshTokenInfo.refreshToken) {
             return true;
         }
         return false;
