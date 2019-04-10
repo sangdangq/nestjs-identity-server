@@ -76,11 +76,11 @@ export class UserController {
 
   @Post('refreshToken')
   async refreshToken(@Body() info: RefreshToken, @Res() res) {
-    await this._userService.refreshToken(info).then(isSuccess => {
-      if (isSuccess) {
-        res.status(HttpStatus.OK).end('Reset password is sent to your email');
+    await this._userService.refreshToken(info).then(token => {
+      if (token) {
+        res.status(HttpStatus.OK).send(token);
       }
-      res.status(HttpStatus.BAD_REQUEST).end('Failed');
+      res.status(HttpStatus.BAD_REQUEST).end('Failed to refresh token');
     });
   }
 }
