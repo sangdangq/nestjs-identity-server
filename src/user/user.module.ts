@@ -5,7 +5,7 @@ import { DatabaseModule } from '../database/database.module';
 import { userProviders } from './user.provider';
 import { UserService } from './user.service';
 import { UserController } from './user.controller';
-import { RefreshTokenModule } from 'token/refresh-token.module';
+import { RefreshTokenModule } from '../token/refresh-token.module';
 
 @Module({
     controllers: [UserController],
