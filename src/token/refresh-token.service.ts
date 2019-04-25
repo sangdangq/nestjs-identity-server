@@ -23,6 +23,6 @@ export class RefreshTokenService {
     }
 
     async delete(emailInfo: string) {
-        return this.refreshTokenModel.deleteOne({email: emailInfo});
+        return this.refreshTokenModel.deleteMany({email: emailInfo});
     }
 }

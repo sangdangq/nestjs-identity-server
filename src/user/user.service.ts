@@ -17,28 +17,39 @@ export class UserService {
     ) {
     }
     async signUp(data: UserRegister): Promise<any> {
-        let user = await this.userRepo.findOne({ where : {Email: data.email} });
+        let user = await this.userRepo.findOne({ where : {email: data.email} });
         if (user) {
             return {
                 isSuccessfully: false,
                 message: 'User already exists',
             };
         }
-        if (data.password !== data.rePassword) {
+        if (data.password !== data.confirmpassword) {
             return {
                 isSuccessfully: false,
                 message: 'Retype password is not match',
             };
         }
         user = new User();
-        user.CustomerId = UUID.UUID();
-        user.FirstName = data.firstName;
-        user.LastName = data.lastName;
-        user.Email = data.email;
-        user.Password = data.password;
-        user.PhoneNo = data.phoneNo;
-        user.Gender = data.gender;
-        user.DateOfBirth = data.dateOfBirth;
+        user.uid = UUID.UUID();
+        user.address1 = data.address1 ;
+        user.address2 = data.address2 ? data.address2 : '';
+        user.agreement = data.agreement;
+        user.birthday = data.birthday;
+        user.city = data.city,
+        user.company = data.company ? data.company : '',
+        user.confirm = data.confirm,
+        user.country = data.country,
+        user.email = data.email,
+        user.firstname = data.firstname,
+        user.gender = data.gender,
+        user.lastname = data.lastname,
+        user.password = data.password,
+        user.confirmpassword = data.confirmpassword,
+        user.phone = data.phone,
+        user.postcode = data.postcode,
+        user.regionstate = data.regionstate,
+
         await user.save().catch(err => {
             return {
                 isSuccessfully: false,
@@ -52,18 +63,18 @@ export class UserService {
     }
 
     async changePassword(data: PasswordChange): Promise<boolean> {
-        const user = await this.userRepo.findOne({ where : {Email: data.email} });
+        const user = await this.userRepo.findOne({ where : {email: data.email} });
         if (data.newPassword !== data.retypePassword) {
             return false;
         }
         const oldPassword = crypto.SHA256(data.oldPassword).toString();
-        if (user.Password === oldPassword) {
+        if (user.password === oldPassword) {
             await this.userRepo.update({
-                Password: crypto.SHA256(data.newPassword).toString(),
+                password: crypto.SHA256(data.newPassword).toString(),
             },
             {
                 where: {
-                    Email: data.email,
+                    email: data.email,
                 },
             });
             return true;
@@ -71,11 +82,11 @@ export class UserService {
     }
 
     async delete(data: Login): Promise<boolean> {
-        const user = await this.userRepo.findOne({ where : {Email: data.email} });
+        const user = await this.userRepo.findOne({ where : {email: data.email} });
         data.password = crypto.SHA256(data.password).toString();
-        if (user && user.Password === data.password) {
+        if (user && user.password === data.password) {
             await this.userRepo.destroy({
-                where: {Email: user.Email},
+                where: {email: user.email},
             });
             return true;
         }
@@ -83,22 +94,22 @@ export class UserService {
     }
 
     async login(login: Login ): Promise<any> {
-        const user = await this.userRepo.findOne({ where : {Email: login.email} });
+        const user = await this.userRepo.findOne({ where : {email: login.email} });
         const hashPwd = crypto.SHA256(login.password).toString();
-        if (user && user.Password === hashPwd) {
-            const refreshTokenCode = this.generateRefreshToken(user.Email);
+        if (user && user.password === hashPwd) {
+            const refreshTokenCode = this.generateRefreshToken(user.email);
             const payload: JwtPayload = {
-                email: user.Email,
-                firstName: user.FirstName,
-                lastName: user.LastName,
+                email: user.email,
+                firstName: user.firstname,
+                lastName: user.lastname,
                 role: 'member',
             };
             const tokenCode = this._jwtService.sign(payload);
             const refreshRecord: RefreshTokenVm = {
-                email: user.Email,
+                email: user.email,
                 refreshToken: refreshTokenCode,
             };
-            await this._refreshService.delete(user.Email);
+            await this._refreshService.delete(user.email);
             this._refreshService.create(refreshRecord);
             return {
                 refreshToken: refreshTokenCode,
@@ -110,14 +121,14 @@ export class UserService {
 
     async resetPassword(emailData: string): Promise<boolean> {
         const user = await this.userRepo.findOne({
-            where: { Email: emailData },
+            where: { email: emailData },
         });
         if (user) {
             const date = new Date().getUTCMilliseconds();
-            const hashString = [user.Email, date].join();
+            const hashString = [user.email, date].join();
             const key = crypto.SHA256(hashString);
             const resetEnt = new ResetPassword();
-            resetEnt.email = user.Email;
+            resetEnt.email = user.email;
             resetEnt.key = key.toString();
             await resetEnt.save();
             return true;
@@ -125,20 +136,20 @@ export class UserService {
         return false;
     }
 
-    async getUserInfo(email: string): Promise<any> {
+    async getUserInfo(emailInfo: string): Promise<any> {
         const user = await this.userRepo.findOne({
-            where: { Email: email},
+            where: { email: emailInfo},
         });
         return {
-            email: user.Email,
-            firstName: user.FirstName,
-            phoneNo: user.PhoneNo,
+            email: user.email,
+            firstName: user.firstname,
+            phoneNo: user.phone,
         };
     }
 
     getUserbyEmail(userEmail: string): any {
         return this.userRepo.findOne({
-            where: { Email: userEmail },
+            where: { email: userEmail },
         });
     }
 
@@ -151,20 +162,20 @@ export class UserService {
     async refreshToken(refreshInfo: RefreshToken) {
         const isValid = await this._refreshService.validateRefreshToken(refreshInfo);
         if (isValid) {
-            const user = await this.userRepo.findOne({ where : {Email: refreshInfo.email} });
-            const refreshTokenCode = this.generateRefreshToken(user.Email);
+            const user = await this.userRepo.findOne({ where : {email: refreshInfo.email} });
+            const refreshTokenCode = this.generateRefreshToken(user.email);
             const payload: JwtPayload = {
-                email: user.Email,
-                firstName: user.FirstName,
-                lastName: user.LastName,
+                email: user.email,
+                firstName: user.firstname,
+                lastName: user.lastname,
                 role: 'member',
             };
             const tokenCode = this._jwtService.sign(payload);
             const refreshRecord: RefreshTokenVm = {
-                email: user.Email,
+                email: user.email,
                 refreshToken: refreshTokenCode,
             };
-            await this._refreshService.delete(user.Email);
+            await this._refreshService.delete(user.email);
             this._refreshService.create(refreshRecord);
             return {
                 refreshToken: refreshTokenCode,

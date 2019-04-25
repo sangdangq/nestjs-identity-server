@@ -1,37 +1,82 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
-import { IsString, IsInt, Length, IsNotEmpty, IsEmail, IsNumber, IsDate, IsDateString, IsPhoneNumber, IsMobilePhone } from 'class-validator';
+import { IsString, IsInt, Length, IsNotEmpty, IsEmail, IsNumber, IsDate,
+    IsDateString, IsPhoneNumber, IsMobilePhone, MaxLength, IsEmpty, IsBoolean, IsOptional } from 'class-validator';
 
 export class UserRegister {
+    @ApiModelProperty()
     @IsString()
-    @ApiModelProperty()
-    firstName: string;
+    @IsOptional()
+    uid?: string;
 
+    @ApiModelProperty()
     @IsString()
-    @ApiModelProperty()
-    lastName: string;
+    address1: string;
 
-    @IsEmail()
-    @ApiModelProperty({example: 'user001@gmail.com'})
-    email: string;
-
+    @ApiModelPropertyOptional()
     @IsString()
-    @ApiModelProperty()
-    password: string;
+    @IsOptional()
+    address2?: string;
 
-    @IsString()
     @ApiModelProperty()
-    rePassword: string;
-
-    @IsPhoneNumber('vi-VN', {message: '+84 prefix must be'})
-    @ApiModelProperty({example: '+84333444555'})
-    phoneNo: string;
-
-    @IsNumber()
-    @ApiModelProperty()
-    gender: number;
+    @IsBoolean()
+    agreement: boolean;
 
     @ApiModelProperty({example: '1999-24-01'})
-    dateOfBirth: Date;
+    birthday: Date;
+
+    @ApiModelProperty()
+    @IsString()
+    city: string;
+
+    @ApiModelPropertyOptional()
+    @IsString()
+    @IsOptional()
+    company?: string;
+
+    @ApiModelProperty()
+    @IsString()
+    confirm: string;
+
+    @ApiModelProperty()
+    @IsString()
+    country: string;
+
+    @ApiModelProperty({example: 'user001@gmail.com'})
+    @IsEmail()
+    email: string;
+
+    @ApiModelProperty()
+    @IsString()
+    firstname: string;
+
+    @ApiModelProperty()
+    @IsString()
+    gender: string;
+
+    @ApiModelProperty()
+    @IsString()
+    lastname: string;
+
+    @ApiModelProperty()
+    @IsString()
+    password: string;
+
+    @ApiModelProperty()
+    @IsString()
+    confirmpassword: string;
+
+    @ApiModelProperty({example: '123456789'})
+    @MaxLength(11)
+    @IsString()
+    phone: string;
+
+    @ApiModelProperty()
+    @IsString()
+    postcode: string;
+
+    @ApiModelProperty()
+    @IsString()
+    regionstate: string;
 }
 
 export class PasswordChange {
