@@ -35,10 +35,6 @@ export class UserRegister {
 
     @ApiModelProperty()
     @IsString()
-    confirm: string;
-
-    @ApiModelProperty()
-    @IsString()
     country: string;
 
     @ApiModelProperty({example: 'user001@gmail.com'})

@@ -38,7 +38,6 @@ export class UserService {
         user.birthday = data.birthday;
         user.city = data.city,
         user.company = data.company ? data.company : '',
-        user.confirm = data.confirm,
         user.country = data.country,
         user.email = data.email,
         user.firstname = data.firstname,
