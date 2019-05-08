@@ -3,7 +3,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as crypto from 'crypto-js';
 import { UUID } from 'angular2-uuid';
 import { User, ResetPassword } from './user.entity';
-import { UserRegister, PasswordChange, Login, RefreshTokenVm } from './../shared/model/user';
+import { UserRegister, PasswordChange, Login, RefreshTokenVm, UserUpdate } from './../shared/model/user';
 import { JwtPayload } from './../shared/auth/payload.model';
 import { RefreshTokenService } from '../token/refresh-token.service';
 import { RefreshToken } from '../token/refresh-token.model';
@@ -20,13 +20,13 @@ export class UserService {
         let user = await this.userRepo.findOne({ where : {email: data.email} });
         if (user) {
             return {
-                isSuccessfully: false,
+                isSuccessfully: true,
                 message: 'User already exists',
             };
         }
         if (data.password !== data.confirmpassword) {
             return {
-                isSuccessfully: false,
+                isSuccessfully: true,
                 message: 'Retype password is not match',
             };
         }
@@ -44,7 +44,6 @@ export class UserService {
         user.gender = data.gender,
         user.lastname = data.lastname,
         user.password = data.password,
-        user.confirmpassword = data.confirmpassword,
         user.phone = data.phone,
         user.postcode = data.postcode,
         user.regionstate = data.regionstate,
@@ -61,23 +60,62 @@ export class UserService {
         };
     }
 
-    async changePassword(data: PasswordChange): Promise<boolean> {
+    async updateProfile(data: UserUpdate): Promise<any> {
         const user = await this.userRepo.findOne({ where : {email: data.email} });
-        if (data.newPassword !== data.retypePassword) {
-            return false;
+        if (data.newPassword !== data.confirmPassword) {
+            return {
+                isSuccess: true,
+                message: 'Confirm password is not match',
+            };
         }
-        const oldPassword = crypto.SHA256(data.oldPassword).toString();
-        if (user.password === oldPassword) {
-            await this.userRepo.update({
-                password: crypto.SHA256(data.newPassword).toString(),
+        const hashPassword = crypto.SHA256(data.password).toString();
+        if (user) {
+            if (hashPassword !== user.password) {
+                return {
+                    isSuccess: false,
+                };
+            }
+        } else {
+            return {
+                isSuccess: false,
+            };
+        }
+
+        const resultNewUser = await this.userRepo.findOne({ where : {email: data.newEmail} });
+
+        if (resultNewUser) {
+            return {
+                isSuccess: true,
+                message: 'Email is existing',
+            };
+        }
+
+        await this.userRepo.update({
+            address1: data.address1,
+            address2: data.address2,
+            agreement: data.agreement,
+            birthday: data.birthday,
+            city: data.city,
+            company: data.company,
+            country: data.country,
+            email: data.newEmail,
+            firstname: data.firstname,
+            gender: data.gender,
+            lastname: data.lastname,
+            phone: data.phone,
+            postcode: data.postcode,
+            regionstate: data.regionstate,
+            password: crypto.SHA256(data.newPassword).toString(),
+        },
+        {
+            where: {
+                email: data.email,
             },
-            {
-                where: {
-                    email: data.email,
-                },
-            });
-            return true;
-        }
+        });
+        return {
+            isSuccess: true,
+            message: 'User profile is updated successfully',
+        };
     }
 
     async delete(data: Login): Promise<boolean> {
@@ -140,9 +178,20 @@ export class UserService {
             where: { email: emailInfo},
         });
         return {
+            address1: user.address1,
+            address2: user.address2,
+            agreement: user.agreement,
+            birthday: user.birthday,
+            city: user.city,
+            company: user.company,
+            country: user.country,
             email: user.email,
-            firstName: user.firstname,
-            phoneNo: user.phone,
+            firstname: user.firstname,
+            gender: user.gender,
+            lastname: user.lastname,
+            phone: user.phone,
+            postcode: user.postcode,
+            regionstate: user.regionstate,
         };
     }
 

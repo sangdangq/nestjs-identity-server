@@ -27,9 +27,6 @@ export class User extends Model<User>{
   company?: string;
 
   @Column
-  confirm: string;
-
-  @Column
   country: string;
 
   @Column
@@ -46,9 +43,6 @@ export class User extends Model<User>{
 
   @Column
   password: string;
-
-  @Column
-  confirmpassword: string;
 
   @Column
   phone: string;

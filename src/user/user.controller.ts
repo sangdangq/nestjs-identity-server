@@ -1,10 +1,11 @@
 import { HttpStatus, UseGuards, Put, Delete } from '@nestjs/common';
 import { Get, Controller, Post, Body, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Login, UserRegister, PasswordChange } from './../shared/model/user';
+import { Login, UserRegister, PasswordChange, UserProfileRq, UserUpdate } from './../shared/model/user';
 import { UserService } from './user.service';
 import { ResetPassword } from './user.entity';
 import { RefreshToken } from '../token/refresh-token.model';
+import { ApiBearerAuth } from '@nestjs/swagger';
 
 @Controller('user')
 export class UserController {
@@ -21,17 +22,19 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard())
-  @Put('changePassword')
-  async changePassword(@Body() body: PasswordChange, @Res() res) {
-    const result = await this._userService.changePassword(body);
-    if (result) {
-      res.status(HttpStatus.OK).end('Successfully');
+  @ApiBearerAuth()
+  @Put('updateProfile')
+  async updateProfile(@Body() body: UserUpdate, @Res() res) {
+    const result = await this._userService.updateProfile(body);
+    if (result.isSuccess) {
+      res.status(HttpStatus.OK).send(result.message);
     } else {
-      res.status(HttpStatus.BAD_REQUEST).end('Failed');
+      res.status(HttpStatus.BAD_REQUEST).end('Failed to update user profile');
     }
   }
 
   @UseGuards(AuthGuard())
+  @ApiBearerAuth()
   @Delete('delete')
   async delete(@Body() body: Login,  @Res() res) {
     const isDelete = await this._userService.delete(body);
@@ -54,8 +57,9 @@ export class UserController {
   }
 
   @UseGuards(AuthGuard())
-  @Post('getInfo')
-  async info(@Body() body: Login, @Res() res) {
+  @ApiBearerAuth()
+  @Post('userProfile')
+  async info(@Body() body: UserProfileRq, @Res() res) {
     const info = await this._userService.getUserInfo(body.email);
     if (info) {
       res.status(HttpStatus.OK).send(info);
