@@ -136,10 +136,20 @@ export class UserService {
         if (user && user.password === hashPwd) {
             const refreshTokenCode = this.generateRefreshToken(user.email);
             const payload: JwtPayload = {
+                address1: user.address1,
+                address2: user.address2,
+                agreement: user.agreement,
+                birthday: user.birthday,
+                city: user.city,
+                company: user.company,
+                country: user.country,
                 email: user.email,
-                firstName: user.firstname,
-                lastName: user.lastname,
-                role: 'member',
+                firstname: user.firstname,
+                gender: user.gender,
+                lastname: user.lastname,
+                phone: user.phone,
+                postcode: user.postcode,
+                regionstate: user.regionstate,
             };
             const tokenCode = this._jwtService.sign(payload);
             const refreshRecord: RefreshTokenVm = {
@@ -151,7 +161,7 @@ export class UserService {
             return {
                 refreshToken: refreshTokenCode,
                 token: tokenCode,
-                expiredIn: 3600,
+                expiredIn: '1h',
             };
         }
     }
@@ -213,10 +223,20 @@ export class UserService {
             const user = await this.userRepo.findOne({ where : {email: refreshInfo.email} });
             const refreshTokenCode = this.generateRefreshToken(user.email);
             const payload: JwtPayload = {
+                address1: user.address1,
+                address2: user.address2,
+                agreement: user.agreement,
+                birthday: user.birthday,
+                city: user.city,
+                company: user.company,
+                country: user.country,
                 email: user.email,
-                firstName: user.firstname,
-                lastName: user.lastname,
-                role: 'member',
+                firstname: user.firstname,
+                gender: user.gender,
+                lastname: user.lastname,
+                phone: user.phone,
+                postcode: user.postcode,
+                regionstate: user.regionstate,
             };
             const tokenCode = this._jwtService.sign(payload);
             const refreshRecord: RefreshTokenVm = {
@@ -228,7 +248,7 @@ export class UserService {
             return {
                 refreshToken: refreshTokenCode,
                 token: tokenCode,
-                expiredIn: 3600,
+                expiredIn: '1h',
             };
         }
     }

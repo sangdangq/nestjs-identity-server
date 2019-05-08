@@ -1,8 +1,18 @@
 export interface JwtPayload {
+    address1: string;
+    address2?: string;
+    agreement: boolean;
+    birthday: Date;
+    city: string;
+    company: string;
+    country: string;
     email: string;
-    role: string;
-    firstName: string;
-    lastName: string;
+    firstname: string;
+    gender: string;
+    lastname: string;
+    phone: string;
+    postcode: string;
+    regionstate: string;
 }
 
 export interface Token {
