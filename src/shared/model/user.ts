@@ -109,10 +109,6 @@ export class UserUpdate {
     @IsEmail()
     email: string;
 
-    @ApiModelProperty({example: 'user001@gmail.com'})
-    @IsEmail()
-    newEmail: string;
-
     @ApiModelProperty()
     @IsString()
     firstname: string;

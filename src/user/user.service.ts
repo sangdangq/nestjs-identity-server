@@ -81,15 +81,6 @@ export class UserService {
             };
         }
 
-        const resultNewUser = await this.userRepo.findOne({ where : {email: data.newEmail} });
-
-        if (resultNewUser) {
-            return {
-                isSuccess: true,
-                message: 'Email is existing',
-            };
-        }
-
         await this.userRepo.update({
             address1: data.address1,
             address2: data.address2,
@@ -98,7 +89,6 @@ export class UserService {
             city: data.city,
             company: data.company,
             country: data.country,
-            email: data.newEmail,
             firstname: data.firstname,
             gender: data.gender,
             lastname: data.lastname,
