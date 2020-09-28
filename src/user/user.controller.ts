@@ -1,11 +1,18 @@
 import { HttpStatus, UseGuards, Put, Delete } from '@nestjs/common';
 import { Get, Controller, Post, Body, Res } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { Login, UserRegister, PasswordChange, UserProfileRq, UserUpdate } from './../shared/model/user';
+import {
+  Login,
+  UserRegister,
+  PasswordChange,
+  UserProfileRq,
+  UserUpdate,
+} from './../shared/model/user';
 import { UserService } from './user.service';
 import { ResetPassword } from './user.entity';
 import { RefreshToken } from '../token/refresh-token.model';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { GoogleLogin } from 'models/google-login.model';
 
 @Controller('user')
 export class UserController {
@@ -36,7 +43,7 @@ export class UserController {
   @UseGuards(AuthGuard())
   @ApiBearerAuth()
   @Delete('delete')
-  async delete(@Body() body: Login,  @Res() res) {
+  async delete(@Body() body: Login, @Res() res) {
     const isDelete = await this._userService.delete(body);
     if (isDelete) {
       res.status(HttpStatus.OK).end('Successfully');
@@ -85,6 +92,16 @@ export class UserController {
         res.status(HttpStatus.OK).send(token);
       }
       res.status(HttpStatus.BAD_REQUEST).end('Failed to refresh token');
+    });
+  }
+
+  @Post('google')
+  async loginByGoogle(@Body() body: GoogleLogin, @Res() res) {
+    await this._userService.loginByGoogle(body.idToken).then(data => {
+      if (data.isSuccess) {
+        res.status(HttpStatus.OK).send(data.claims);
+      }
+      res.status(HttpStatus.BAD_REQUEST).end('Login failed');
     });
   }
 }
