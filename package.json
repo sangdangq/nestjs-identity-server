@@ -36,7 +36,7 @@
     "crypto-js": "^3.1.9-1",
     "joi": "^14.3.1",
     "jsonwebtoken": "^8.5.0",
-    "jsrsasign": "^8.0.12",
+    "jsrsasign": "^8.0.19",
     "mongoose": "^5.4.17",
     "mysql2": "^1.6.5",
     "passport": "^0.4.0",
